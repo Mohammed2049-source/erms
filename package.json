@@ -1,0 +1,12 @@
+{
+  "name": "employee-record-management",
+  "version": "1.0.0",
+  "private": true,
+  "description": "A full-stack employee record management system",
+  "scripts": {
+    "start": "node server.js"
+  },
+  "engines": {
+    "node": ">=18"
+  }
+}

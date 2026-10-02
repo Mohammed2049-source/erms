@@ -1,0 +1,200 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="theme-color" content="#f7f8fc">
+    <meta name="description" content="A simple, secure workspace for managing your employee records.">
+    <title>People — Borno State Government</title>
+    <link rel="stylesheet" href="/styles.css">
+    <script src="/app.js" defer></script>
+  </head>
+  <body>
+    <div class="app-shell">
+      <aside class="sidebar">
+        <a class="brand" href="/" aria-label="Borno State Government home">
+          <span class="brand-mark" aria-hidden="true">
+            <svg viewBox="0 0 32 32"><path d="M16 3.5 18.8 13l9.7 3-9.7 2.9-2.8 9.6-2.9-9.6-9.6-2.9 9.6-3L16 3.5Z" fill="currentColor"/><circle cx="16" cy="16" r="2.2" fill="#17233b"/></svg>
+          </span>
+          <span class="brand-copy"><strong>Borno State Government</strong><small>PEOPLE & CULTURE</small></span>
+        </a>
+
+        <div class="sidebar-label">WORKSPACE</div>
+        <nav class="side-nav" aria-label="Main navigation">
+          <a class="nav-link" href="#overview">
+            <svg viewBox="0 0 24 24" aria-hidden="true"><rect x="3" y="3" width="8" height="8" rx="2"/><rect x="13" y="3" width="8" height="5" rx="2"/><rect x="13" y="10" width="8" height="11" rx="2"/><rect x="3" y="13" width="8" height="8" rx="2"/></svg>
+            Overview
+          </a>
+          <a class="nav-link active" href="#employees" aria-current="page">
+            <svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="9" cy="8" r="3.5"/><path d="M2.8 20c.4-3.4 2.7-5.2 6.2-5.2s5.8 1.8 6.2 5.2M16 5.2a3.2 3.2 0 0 1 0 6.2m1.5 3.8c2.2.7 3.4 2.2 3.7 4.8"/></svg>
+            Employees
+            <span class="nav-count" id="nav-count">0</span>
+          </a>
+          <a class="nav-link" href="#departments">
+            <svg viewBox="0 0 24 24" aria-hidden="true"><rect x="3" y="4" width="18" height="16" rx="2.5"/><path d="M8 8h3M8 12h3M8 16h3m3-8h2m-2 4h2m-2 4h2"/></svg>
+            Departments
+          </a>
+        </nav>
+
+        <div class="sidebar-footer">
+          <div class="help-card">
+            <span class="help-icon" aria-hidden="true">✦</span>
+            <strong>People, first.</strong>
+            <p>Keep your team's details organized and up to date.</p>
+          </div>
+          <div class="profile">
+            <div class="profile-avatar">JD</div>
+            <div class="profile-info"><strong>Jordan Davis</strong><small>HR Administrator</small></div>
+            <span class="profile-dots" aria-hidden="true">•••</span>
+          </div>
+        </div>
+      </aside>
+
+      <main class="main-content" id="overview">
+        <header class="topbar">
+          <div class="breadcrumbs"><span>Workspace</span><span class="crumb-slash">/</span><strong>People</strong></div>
+          <div class="topbar-right">
+            <span class="today-label" id="today-label"></span>
+            <span class="topbar-divider"></span>
+            <button class="icon-button notification-button" aria-label="Notifications">
+              <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M18 9a6 6 0 0 0-12 0c0 7-3 7-3 9h18c0-2-3-2-3-9M10 21h4"/></svg>
+              <span class="notification-dot"></span>
+            </button>
+            <div class="topbar-avatar" aria-label="Jordan Davis">JD</div>
+          </div>
+        </header>
+
+        <section class="page-content" id="employees">
+          <div class="page-heading">
+            <div>
+              <div class="eyebrow"><span class="eyebrow-line"></span> YOUR ORGANIZATION</div>
+              <h1>People <span class="heading-sparkle" aria-hidden="true">✳</span></h1>
+              <p class="page-subtitle">A little insight into the people who make it all happen.</p>
+            </div>
+            <button class="button button-primary" id="add-employee-button">
+              <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 5v14m-7-7h14"/></svg>
+              Add employee
+            </button>
+          </div>
+
+          <section class="stats-grid" aria-label="Employee overview">
+            <article class="stat-card stat-card-featured">
+              <div class="stat-top"><span class="stat-label">Total people</span><span class="stat-icon stat-icon-lilac"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="9" cy="8" r="3.3"/><path d="M2.8 20c.3-3.3 2.5-5 6.2-5s5.9 1.7 6.2 5m.8-13.5a3.1 3.1 0 0 1 0 6m1.2 2c2.3.7 3.6 2.4 3.8 4.5"/></svg></span></div>
+              <div class="stat-bottom"><strong id="total-count">—</strong><span class="stat-note"><span class="stat-note-dot"></span> across your organization</span></div>
+            </article>
+            <article class="stat-card">
+              <div class="stat-top"><span class="stat-label">Active</span><span class="stat-icon stat-icon-green"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="m5 12 4 4L19 6"/></svg></span></div>
+              <div class="stat-bottom"><strong id="active-count">—</strong><span class="stat-note">ready to make things happen</span></div>
+            </article>
+            <article class="stat-card">
+              <div class="stat-top"><span class="stat-label">Departments</span><span class="stat-icon stat-icon-peach"><svg viewBox="0 0 24 24" aria-hidden="true"><rect x="4" y="4" width="16" height="16" rx="3"/><path d="M8 8h3m-3 4h3m-3 4h3m3-8h2m-2 4h2m-2 4h2"/></svg></span></div>
+              <div class="stat-bottom"><strong id="department-count">—</strong><span class="stat-note">different teams, one mission</span></div>
+            </article>
+            <article class="stat-card">
+              <div class="stat-top"><span class="stat-label">On leave</span><span class="stat-icon stat-icon-blue"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="8.5"/><path d="M12 7v5l3 2"/></svg></span></div>
+              <div class="stat-bottom"><strong id="leave-count">—</strong><span class="stat-note">we'll see you soon</span></div>
+            </article>
+          </section>
+
+          <section class="team-section" aria-labelledby="team-heading">
+            <div class="section-heading">
+              <div>
+                <div class="section-kicker">THE WHOLE CREW</div>
+                <h2 id="team-heading">Your team <span class="team-count" id="team-count">0</span></h2>
+              </div>
+              <button class="button button-secondary" id="export-button">
+                <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3v12m-5-5 5 5 5-5M5 17v3h14v-3"/></svg>
+                Export
+              </button>
+            </div>
+
+            <div class="table-card">
+              <div class="table-toolbar">
+                <label class="search-box">
+                  <svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="10.8" cy="10.8" r="6.8"/><path d="m16 16 4.3 4.3"/></svg>
+                  <input id="search-input" type="search" placeholder="Search people..." autocomplete="off" aria-label="Search employees">
+                  <kbd>⌘ K</kbd>
+                </label>
+                <div class="filters">
+                  <label class="select-wrap">
+                    <span class="sr-only">Filter by department</span>
+                    <select id="department-filter"><option value="">All departments</option></select>
+                    <svg viewBox="0 0 24 24" aria-hidden="true"><path d="m7 10 5 5 5-5"/></svg>
+                  </label>
+                  <label class="select-wrap select-status">
+                    <span class="sr-only">Filter by status</span>
+                    <select id="status-filter">
+                      <option value="">Any status</option>
+                      <option value="Active">Active</option>
+                      <option value="On Leave">On leave</option>
+                      <option value="Inactive">Inactive</option>
+                    </select>
+                    <svg viewBox="0 0 24 24" aria-hidden="true"><path d="m7 10 5 5 5-5"/></svg>
+                  </label>
+                </div>
+              </div>
+
+              <div class="table-scroll">
+                <table>
+                  <thead>
+                    <tr>
+                      <th scope="col">NAME</th>
+                      <th scope="col">ROLE & DEPARTMENT</th>
+                      <th scope="col">STATUS</th>
+                      <th scope="col">START DATE</th>
+                      <th scope="col">LOCATION</th>
+                      <th scope="col"><span class="sr-only">Actions</span></th>
+                    </tr>
+                  </thead>
+                  <tbody id="employee-rows"></tbody>
+                </table>
+                <div class="empty-state" id="empty-state" hidden>
+                  <div class="empty-illustration" aria-hidden="true">✳</div>
+                  <strong id="empty-title">No people found</strong>
+                  <p id="empty-message">Try another search or adjust your filters.</p>
+                  <button class="text-button" id="clear-filters-button">Clear filters</button>
+                </div>
+                <div class="loading-state" id="loading-state">Getting your people together...</div>
+              </div>
+
+              <div class="table-footer">
+                <span id="results-label">Loading employees</span>
+                <span class="table-footer-note"><span class="footer-status-dot"></span> All changes saved</span>
+              </div>
+            </div>
+          </section>
+
+          <footer class="page-footer"><span>Made for the people who make it happen.</span><span>Borno State Government <b>✳</b></span></footer>
+        </section>
+      </main>
+    </div>
+
+    <dialog class="employee-dialog" id="employee-dialog" aria-labelledby="dialog-title">
+      <form id="employee-form">
+        <div class="dialog-heading">
+          <div><span class="dialog-kicker">PEOPLE DIRECTORY</span><h2 id="dialog-title">Add a person</h2><p>Good teams start with knowing each other.</p></div>
+          <button class="dialog-close" type="button" id="close-dialog-button" aria-label="Close dialog">×</button>
+        </div>
+        <div class="form-grid">
+          <label class="form-field"><span>First name <b>*</b></span><input name="firstName" required maxlength="80" autocomplete="given-name" placeholder="e.g. Alex"></label>
+          <label class="form-field"><span>Last name <b>*</b></span><input name="lastName" required maxlength="80" autocomplete="family-name" placeholder="e.g. Morgan"></label>
+          <label class="form-field form-field-wide"><span>Work email <b>*</b></span><input name="email" required maxlength="254" type="email" autocomplete="email" placeholder="alex@company.com"></label>
+          <label class="form-field"><span>Job title <b>*</b></span><input name="position" required maxlength="120" placeholder="e.g. Product Designer"></label>
+          <label class="form-field"><span>Department <b>*</b></span><input name="department" required maxlength="100" list="department-options" placeholder="e.g. Design"><datalist id="department-options"></datalist></label>
+          <label class="form-field"><span>Start date <b>*</b></span><input name="startDate" required type="date"></label>
+          <label class="form-field"><span>Phone</span><input name="phone" maxlength="40" type="tel" autocomplete="tel" placeholder="+1 (555) 000-0000"></label>
+          <label class="form-field"><span>Location</span><input name="location" maxlength="120" autocomplete="address-level2" placeholder="e.g. New York"></label>
+          <label class="form-field"><span>Annual salary</span><div class="input-prefix"><span>$</span><input name="salary" min="0" type="number" step="1000" placeholder="0"></div></label>
+          <label class="form-field"><span>Status</span><select name="status"><option>Active</option><option>On Leave</option><option>Inactive</option></select></label>
+        </div>
+        <p class="form-error" id="form-error" role="alert" hidden></p>
+        <div class="dialog-actions">
+          <button class="button button-secondary" type="button" id="cancel-dialog-button">Cancel</button>
+          <button class="button button-primary" type="submit" id="save-employee-button">Save employee <span aria-hidden="true">↗</span></button>
+        </div>
+      </form>
+    </dialog>
+
+    <div class="toast" id="toast" role="status" aria-live="polite"></div>
+  </body>
+</html>
