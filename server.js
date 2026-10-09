@@ -7,8 +7,12 @@ const PORT = Number(process.env.PORT) || 3000;
 const HOST = process.env.HOST || "127.0.0.1";
 const ROOT = __dirname;
 const DATA_FILE = path.join(ROOT, "data", "employees.json");
+const REGISTRY_FILE = path.join(ROOT, "data", "registry.json");
+const REGISTRY_DIR = path.join(ROOT, "data", "registry");
 const PUBLIC_DIR = path.join(ROOT, "public");
 const MAX_BODY_SIZE = 1024 * 1024;
+const MAX_REGISTRY_FILE_SIZE = 10 * 1024 * 1024;
+const MAX_REGISTRY_BODY_SIZE = Math.ceil(MAX_REGISTRY_FILE_SIZE / 3) * 4 + 16 * 1024;
 const STATUSES = new Set(["Active", "On Leave", "Inactive"]);
 const MIME_TYPES = {
   ".css": "text/css; charset=utf-8",
@@ -41,17 +45,50 @@ async function readEmployees() {
   }
 }
 
+async function readRegistry() {
+  try {
+    const contents = await fs.readFile(REGISTRY_FILE, "utf8");
+    const files = JSON.parse(contents);
+    if (!Array.isArray(files)) {
+      throw new Error("Registry data must be an array.");
+    }
+    return files;
+  } catch (error) {
+    if (error.code === "ENOENT") {
+      return [];
+    }
+    throw error;
+  }
+}
+
+async function writeJsonFile(filePath, value) {
+  const temporaryFile = `${filePath}.${randomUUID()}.tmp`;
+  try {
+    await fs.writeFile(temporaryFile, `${JSON.stringify(value, null, 2)}\n`, "utf8");
+    await fs.rename(temporaryFile, filePath);
+  } catch (error) {
+    try {
+      await fs.unlink(temporaryFile);
+    } catch (cleanupError) {
+      if (cleanupError.code !== "ENOENT") console.error("Unable to remove temporary data file:", cleanupError);
+    }
+    throw error;
+  }
+}
+
+function serializeWrite(operation) {
+  const result = writeQueue.then(operation);
+  writeQueue = result.catch(() => {});
+  return result;
+}
+
 function updateEmployees(update) {
-  const operation = writeQueue.then(async () => {
+  return serializeWrite(async () => {
     const employees = await readEmployees();
     const result = update(employees);
-    const temporaryFile = `${DATA_FILE}.${randomUUID()}.tmp`;
-    await fs.writeFile(temporaryFile, `${JSON.stringify(employees, null, 2)}\n`, "utf8");
-    await fs.rename(temporaryFile, DATA_FILE);
+    await writeJsonFile(DATA_FILE, employees);
     return result;
   });
-  writeQueue = operation.catch(() => {});
-  return operation;
 }
 
 function sendJson(response, status, payload) {
@@ -62,25 +99,25 @@ function sendJson(response, status, payload) {
   response.end(JSON.stringify(payload));
 }
 
-function readJsonBody(request) {
+function readJsonBody(request, maxSize = MAX_BODY_SIZE) {
   return new Promise((resolve, reject) => {
-    let body = "";
+    const chunks = [];
     let size = 0;
     let exceededLimit = false;
 
     request.on("data", (chunk) => {
       size += chunk.length;
-      if (size > MAX_BODY_SIZE) {
+      if (size > maxSize) {
         exceededLimit = true;
         reject(new HttpError(413, "Request body is too large."));
         return;
       }
-      body += chunk;
+      chunks.push(chunk);
     });
     request.on("end", () => {
       if (exceededLimit) return;
       try {
-        resolve(JSON.parse(body));
+        resolve(JSON.parse(Buffer.concat(chunks).toString("utf8")));
       } catch {
         reject(new HttpError(400, "Request body must be valid JSON."));
       }
@@ -156,8 +193,125 @@ function validateEmployee(input, existing) {
   return employee;
 }
 
+function validateRegistryUpload(input) {
+  if (!input || typeof input !== "object" || Array.isArray(input)) {
+    throw new HttpError(400, "File details must be a JSON object.");
+  }
+  if (typeof input.employeeId !== "string" || !input.employeeId.trim()) {
+    throw new HttpError(400, "Choose an employee for this file.");
+  }
+  if (typeof input.fileNumber !== "string" || !input.fileNumber.trim()) {
+    throw new HttpError(400, "Enter a file number.");
+  }
+  const fileNumber = input.fileNumber.trim();
+  if (fileNumber.length > 80) {
+    throw new HttpError(400, "File number must be 80 characters or fewer.");
+  }
+  if (typeof input.name !== "string" || !input.name.trim()) {
+    throw new HttpError(400, "Choose a file to upload.");
+  }
+
+  const name = input.name.trim().replace(/\\/g, "/").split("/").pop()
+    .replace(/[\u0000-\u001f\u007f]/g, "_").slice(0, 255);
+  if (!name) throw new HttpError(400, "Enter a valid file name.");
+  if (typeof input.contentBase64 !== "string") {
+    throw new HttpError(400, "The uploaded file data is invalid.");
+  }
+  if (input.contentBase64.length > Math.ceil(MAX_REGISTRY_FILE_SIZE / 3) * 4) {
+    throw new HttpError(413, "Files must be 10 MB or smaller.");
+  }
+  if (/[^A-Za-z0-9+/=]/.test(input.contentBase64)) {
+    throw new HttpError(400, "The uploaded file data is invalid.");
+  }
+
+  const contents = Buffer.from(input.contentBase64, "base64");
+  if (contents.toString("base64") !== input.contentBase64) {
+    throw new HttpError(400, "The uploaded file data is invalid.");
+  }
+  if (contents.length > MAX_REGISTRY_FILE_SIZE) {
+    throw new HttpError(413, "Files must be 10 MB or smaller.");
+  }
+  return { fileNumber, name, contents };
+}
+
 async function handleApi(request, response, url) {
   const employeePath = url.pathname.match(/^\/api\/employees\/([^/]+)$/);
+  const registryFilePath = url.pathname.match(/^\/api\/registry\/([^/]+)$/);
+  if (url.pathname === "/api/registry" && request.method === "GET") {
+    const files = await readRegistry();
+    files.sort((a, b) => b.uploadedAt.localeCompare(a.uploadedAt));
+    return sendJson(response, 200, files.map(({ storedName, ...file }) => file));
+  }
+
+  if (url.pathname === "/api/registry" && request.method === "POST") {
+    const input = await readJsonBody(request, MAX_REGISTRY_BODY_SIZE);
+    const { fileNumber, name, contents } = validateRegistryUpload(input);
+    const record = await serializeWrite(async () => {
+      const employees = await readEmployees();
+      const employee = employees.find((item) => item.id === input.employeeId);
+      if (!employee) throw new HttpError(404, "Choose an employee that still exists.");
+
+      const files = await readRegistry();
+      const id = randomUUID();
+      const storedName = `${id}.bin`;
+      await fs.writeFile(path.join(REGISTRY_DIR, storedName), contents, { flag: "wx" });
+      const uploadedFile = {
+        id,
+        fileNumber,
+        name,
+        employeeId: employee.id,
+        employeeName: `${employee.firstName} ${employee.lastName}`,
+        size: contents.length,
+        uploadedAt: new Date().toISOString(),
+        storedName,
+      };
+      try {
+        await writeJsonFile(REGISTRY_FILE, [...files, uploadedFile]);
+      } catch (error) {
+        try {
+          await fs.unlink(path.join(REGISTRY_DIR, storedName));
+        } catch (cleanupError) {
+          if (cleanupError.code !== "ENOENT") console.error("Unable to remove incomplete registry upload:", cleanupError);
+        }
+        throw error;
+      }
+      return uploadedFile;
+    });
+    const { storedName, ...publicRecord } = record;
+    return sendJson(response, 201, publicRecord);
+  }
+
+  if (registryFilePath && request.method === "GET") {
+    const id = decodeURIComponent(registryFilePath[1]);
+    const file = (await readRegistry()).find((item) => item.id === id);
+    if (!file) throw new HttpError(404, "Registry file not found.");
+    const contents = await fs.readFile(path.join(REGISTRY_DIR, file.storedName));
+    const safeName = file.name.replace(/[^\x20-\x7e]/g, "_").replace(/["\\]/g, "_");
+    const encodedName = encodeURIComponent(Buffer.from(file.name, "utf8").toString("utf8"))
+      .replace(/[!'()*]/g, (character) => `%${character.charCodeAt(0).toString(16).toUpperCase()}`);
+    response.writeHead(200, {
+      "Cache-Control": "no-store",
+      "Content-Disposition": `attachment; filename="${safeName}"; filename*=UTF-8''${encodedName}`,
+      "Content-Length": contents.length,
+      "Content-Type": "application/octet-stream",
+    });
+    return response.end(contents);
+  }
+
+  if (registryFilePath && request.method === "DELETE") {
+    const id = decodeURIComponent(registryFilePath[1]);
+    await serializeWrite(async () => {
+      const files = await readRegistry();
+      const index = files.findIndex((item) => item.id === id);
+      if (index === -1) throw new HttpError(404, "Registry file not found.");
+      const [file] = files.splice(index, 1);
+      await writeJsonFile(REGISTRY_FILE, files);
+      await fs.unlink(path.join(REGISTRY_DIR, file.storedName));
+    });
+    response.writeHead(204, { "Cache-Control": "no-store" });
+    return response.end();
+  }
+
   if (url.pathname === "/api/employees" && request.method === "GET") {
     const employees = await readEmployees();
     employees.sort((a, b) => a.lastName.localeCompare(b.lastName) || a.firstName.localeCompare(b.firstName));
@@ -200,8 +354,8 @@ async function handleApi(request, response, url) {
     return response.end();
   }
 
-  if (url.pathname === "/api/employees" || employeePath) {
-    response.setHeader("Allow", employeePath ? "PATCH, DELETE" : "GET, POST");
+  if (url.pathname === "/api/employees" || employeePath || url.pathname === "/api/registry" || registryFilePath) {
+    response.setHeader("Allow", employeePath ? "PATCH, DELETE" : registryFilePath ? "GET, DELETE" : "GET, POST");
     throw new HttpError(405, "Method not allowed.");
   }
 
@@ -254,6 +408,7 @@ const server = http.createServer(async (request, response) => {
 
 async function start() {
   await fs.mkdir(path.dirname(DATA_FILE), { recursive: true });
+  await fs.mkdir(REGISTRY_DIR, { recursive: true });
   server.listen(PORT, HOST, () => {
     console.log(`Employee Record Management System is running at http://${HOST}:${PORT}`);
   });

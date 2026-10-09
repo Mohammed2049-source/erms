@@ -26,7 +26,7 @@ button:focus-visible, a:focus-visible, input:focus-visible, select:focus-visible
 .brand-mark { display: grid; width: 35px; height: 35px; place-items: center; border-radius: 12px; color: #bbb4ff; background: #303956; }
 .brand-mark svg { width: 24px; height: 24px; }
 .brand-copy { display: grid; gap: 3px; }
-.brand-copy strong { max-width: 165px; color: #fff; font: 800 13px/1.2 "Manrope", sans-serif; letter-spacing: -.35px; }
+.brand-copy strong { max-width: 170px; color: #fff; font: 800 10.5px/1.25 "Manrope", sans-serif; letter-spacing: .05px; }
 .brand-copy small { color: #929ab0; font-size: 8px; font-weight: 700; letter-spacing: 1.25px; }
 .sidebar-label { margin: 51px 0 13px 11px; color: #737d94; font-size: 9px; font-weight: 700; letter-spacing: 1.35px; }
 .side-nav { display: grid; gap: 6px; }
@@ -61,6 +61,21 @@ button:focus-visible, a:focus-visible, input:focus-visible, select:focus-visible
 .notification-dot { position: absolute; top: 5px; right: 5px; width: 5px; height: 5px; border: 1px solid #fff; border-radius: 50%; background: #f18c78; }
 .topbar-avatar { width: 30px; height: 30px; font-size: 9px; }
 .page-content { max-width: 1392px; margin: 0 auto; padding: 43px 48px 20px; }
+.welcome-banner { position: relative; display: flex; min-height: 188px; align-items: center; justify-content: space-between; overflow: hidden; margin-bottom: 29px; padding: 27px 35px; border: 1px solid #e5e4f5; border-radius: 14px; background: linear-gradient(112deg, #fff 7%, #f7f5ff 62%, #efedff); box-shadow: 0 7px 24px #30355708; }
+.welcome-copy { position: relative; z-index: 1; max-width: 610px; }
+.welcome-kicker { color: #756dd1; font-size: 9px; font-weight: 700; letter-spacing: 1.45px; }
+.welcome-banner h1 { margin: 9px 0 6px; color: #292b3c; font: 700 27px/1.2 "Manrope", "Segoe UI", sans-serif; letter-spacing: -.8px; }
+.welcome-banner p { max-width: 440px; margin: 0; color: #85899a; font-size: 11px; line-height: 1.65; }
+.welcome-link { display: inline-flex; align-items: center; gap: 8px; margin-top: 15px; color: #5f57ce; font-size: 10px; font-weight: 600; text-decoration: none; }
+.welcome-link:hover { color: #4941b7; }
+.welcome-link svg { width: 14px; height: 14px; fill: none; stroke: currentColor; stroke-linecap: round; stroke-linejoin: round; stroke-width: 1.8; transition: transform .15s ease; }
+.welcome-link:hover svg { transform: translateX(3px); }
+.welcome-art { position: absolute; top: -62px; right: 10%; width: 286px; height: 286px; }
+.welcome-orbit { position: absolute; display: block; border: 1px solid #dad7fa; border-radius: 50%; }
+.welcome-orbit-one { inset: 14px; }
+.welcome-orbit-two { inset: 42px; border-color: #e6e3fb; }
+.welcome-art-mark { position: absolute; inset: 77px; display: grid; place-items: center; border: 1px solid #e6e3fb; border-radius: 34px; color: #756dd1; background: #ffffffc9; box-shadow: 0 12px 32px #695fd51c; font: 700 62px/1 "Manrope", sans-serif; transform: rotate(-8deg); }
+.welcome-art-spark { position: absolute; top: 47px; right: 35px; color: #a49df0; font-size: 25px; }
 .page-heading { display: flex; align-items: flex-end; justify-content: space-between; margin-bottom: 26px; }
 .eyebrow, .section-kicker, .dialog-kicker { color: #9695a7; font-size: 9px; font-weight: 700; letter-spacing: 1.3px; }
 .eyebrow { display: flex; align-items: center; gap: 8px; }
@@ -156,6 +171,28 @@ td { height: 58px; padding: 8px 12px; border-top: 1px solid #f2f3f6; color: #737
 .table-footer { display: flex; min-height: 41px; align-items: center; justify-content: space-between; padding: 0 17px; border-top: 1px solid #f0f1f5; color: #9a9daa; font-size: 9px; }
 .table-footer-note { display: inline-flex; align-items: center; gap: 6px; color: #a0a4ae; }
 .footer-status-dot { width: 5px; height: 5px; border-radius: 50%; background: #62c4a0; }
+.registry-section { margin-top: 38px; scroll-margin-top: 82px; }
+.registry-upload { display: grid; grid-template-columns: minmax(160px, 1fr) minmax(130px, .8fr) minmax(145px, .85fr) minmax(180px, 1.15fr) auto; align-items: end; gap: 13px; margin-bottom: 15px; padding: 16px; border: 1px solid #e9e8f3; border-radius: 10px; background: #fff; }
+.registry-upload-copy { display: grid; align-self: center; gap: 5px; }
+.registry-upload-copy strong { color: #393c4d; font-size: 11px; }
+.registry-upload-copy span { color: #9296a5; font-size: 9px; line-height: 1.5; }
+.registry-field { display: grid; min-width: 0; gap: 6px; color: #666a7a; font-size: 9px; font-weight: 600; }
+.registry-field > span b { color: #e07373; }
+.registry-field select, .registry-field input { width: 100%; min-width: 0; height: 35px; padding: 0 9px; border: 1px solid #e8eaf0; border-radius: 6px; color: #55596a; background: #fff; font-size: 9px; }
+.registry-field input[type="file"] { padding: 7px; }
+.registry-submit { min-height: 35px; white-space: nowrap; }
+.registry-error { grid-column: 1 / -1; margin: 0; }
+.registry-card .table-toolbar { gap: 14px; }
+.registry-card .search-box { width: min(360px, 70%); }
+.registry-card .select-wrap { width: min(205px, 42%); }
+.registry-card .select-wrap select { width: 100%; }
+.registry-file-name { display: flex; min-width: 175px; align-items: center; gap: 9px; }
+.registry-file-icon { display: grid; flex: 0 0 auto; width: 28px; height: 28px; place-items: center; border-radius: 8px; color: #6a60cc; background: #f1efff; font-size: 14px; }
+.registry-file-name a { overflow: hidden; max-width: 260px; color: #4c4f61; font-size: 10px; text-decoration: none; text-overflow: ellipsis; }
+.registry-file-name a:hover { color: #5f57ce; text-decoration: underline; }
+.registry-empty { display: flex; min-height: 170px; align-items: center; justify-content: center; padding: 20px; color: #8d91a0; font-size: 10px; text-align: center; }
+.registry-empty[hidden] { display: none; }
+.registry-card .row-action { text-decoration: none; }
 .page-footer { display: flex; justify-content: space-between; margin-top: 21px; color: #afb2bd; font-size: 8px; }
 .page-footer b { margin-left: 3px; color: #9d95ed; font-size: 10px; }
 
@@ -197,20 +234,29 @@ td { height: 58px; padding: 8px 12px; border-top: 1px solid #f2f3f6; color: #737
   .main-content { margin-left: 218px; }
   .topbar { padding: 0 30px; }
   .page-content { padding: 36px 30px 20px; }
+  .welcome-banner { min-height: 175px; padding: 24px 26px; }
+  .welcome-art { right: 0; opacity: .75; }
   .stats-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
   .stat-card { min-height: 102px; }
   .team-section { margin-top: 31px; }
+  .registry-upload { grid-template-columns: 1fr 1fr; }
+  .registry-upload-copy { grid-column: 1 / -1; }
 }
 @media (max-width: 760px) {
   .sidebar { position: static; width: 100%; height: 60px; flex-direction: row; align-items: center; justify-content: space-between; padding: 0 17px; }
   .brand-mark { width: 32px; height: 32px; }
-  .brand-copy strong { font-size: 13px; }
+  .brand-copy strong { font-size: 11.5px; }
   .brand-copy small { font-size: 7px; }
   .sidebar-label, .side-nav, .sidebar-footer { display: none; }
   .main-content { margin-left: 0; }
   .topbar { height: 49px; padding: 0 17px; }
   .today-label, .topbar-divider { display: none; }
   .page-content { padding: 28px 17px 17px; }
+  .welcome-banner { min-height: 178px; margin-bottom: 25px; padding: 22px 20px; }
+  .welcome-copy { max-width: 82%; }
+  .welcome-banner h1 { max-width: 310px; font-size: 22px; }
+  .welcome-banner p { max-width: 270px; font-size: 10px; }
+  .welcome-art { top: -35px; right: -115px; opacity: .35; }
   .page-heading { align-items: flex-start; gap: 12px; }
   h1 { font-size: 27px; }
   .page-subtitle { max-width: 240px; font-size: 10px; line-height: 1.5; }
@@ -221,6 +267,13 @@ td { height: 58px; padding: 8px 12px; border-top: 1px solid #f2f3f6; color: #737
   .stat-bottom > strong { font-size: 21px; }
   .stat-note { font-size: 8px; }
   .team-section { margin-top: 27px; }
+  .registry-section { margin-top: 29px; }
+  .registry-upload { grid-template-columns: 1fr; padding: 13px; }
+  .registry-upload-copy { grid-column: auto; }
+  .registry-error { grid-column: auto; }
+  .registry-submit { justify-self: start; }
+  .registry-card .table-toolbar { align-items: stretch; }
+  .registry-card .search-box, .registry-card .select-wrap { width: 100%; }
   .table-toolbar { align-items: stretch; flex-direction: column; padding: 12px; }
   .search-box { width: 100%; }
   .filters { display: grid; grid-template-columns: 1fr 1fr; }

@@ -5,18 +5,18 @@
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <meta name="theme-color" content="#f7f8fc">
     <meta name="description" content="A simple, secure workspace for managing your employee records.">
-    <title>People — Borno State Government</title>
+    <title>Office of the Head Service — Employee Records</title>
     <link rel="stylesheet" href="/styles.css">
     <script src="/app.js" defer></script>
   </head>
   <body>
     <div class="app-shell">
       <aside class="sidebar">
-        <a class="brand" href="/" aria-label="Borno State Government home">
+        <a class="brand" href="/" aria-label="Office of the Head Service home">
           <span class="brand-mark" aria-hidden="true">
             <svg viewBox="0 0 32 32"><path d="M16 3.5 18.8 13l9.7 3-9.7 2.9-2.8 9.6-2.9-9.6-9.6-2.9 9.6-3L16 3.5Z" fill="currentColor"/><circle cx="16" cy="16" r="2.2" fill="#17233b"/></svg>
           </span>
-          <span class="brand-copy"><strong>Borno State Government</strong><small>PEOPLE & CULTURE</small></span>
+          <span class="brand-copy"><strong>OFFICE OF THE HEAD SERVICE</strong><small>EMPLOYEE RECORDS</small></span>
         </a>
 
         <div class="sidebar-label">WORKSPACE</div>
@@ -33,6 +33,11 @@
           <a class="nav-link" href="#departments">
             <svg viewBox="0 0 24 24" aria-hidden="true"><rect x="3" y="4" width="18" height="16" rx="2.5"/><path d="M8 8h3M8 12h3M8 16h3m3-8h2m-2 4h2m-2 4h2"/></svg>
             Departments
+          </a>
+          <a class="nav-link" href="#registry">
+            <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 4h16v16H4zM8 4v4h8V4M8 13h8m-8 3h5"/></svg>
+            Registry
+            <span class="nav-count" id="registry-count">0</span>
           </a>
         </nav>
 
@@ -65,6 +70,24 @@
         </header>
 
         <section class="page-content" id="employees">
+          <section class="welcome-banner" aria-labelledby="welcome-title">
+            <div class="welcome-copy">
+              <span class="welcome-kicker">OFFICE OF THE HEAD SERVICE</span>
+              <h1 id="welcome-title">Welcome to your workspace</h1>
+              <p>One place to keep employee records organized and important files close at hand.</p>
+              <a class="welcome-link" href="#registry">
+                Explore the file registry
+                <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5 12h14m-6-6 6 6-6 6"/></svg>
+              </a>
+            </div>
+            <div class="welcome-art" aria-hidden="true">
+              <span class="welcome-orbit welcome-orbit-one"></span>
+              <span class="welcome-orbit welcome-orbit-two"></span>
+              <span class="welcome-art-mark">H</span>
+              <span class="welcome-art-spark">✳</span>
+            </div>
+          </section>
+
           <div class="page-heading">
             <div>
               <div class="eyebrow"><span class="eyebrow-line"></span> YOUR ORGANIZATION</div>
@@ -164,7 +187,77 @@
             </div>
           </section>
 
-          <footer class="page-footer"><span>Made for the people who make it happen.</span><span>Borno State Government <b>✳</b></span></footer>
+          <section class="registry-section" id="registry" aria-labelledby="registry-heading">
+            <div class="section-heading">
+              <div>
+                <div class="section-kicker">EMPLOYEE DOCUMENTS</div>
+                <h2 id="registry-heading">File registry <span class="team-count" id="registry-total">0</span></h2>
+              </div>
+            </div>
+
+            <form class="registry-upload" id="registry-upload-form">
+              <div class="registry-upload-copy">
+                <strong>Add a file to the registry</strong>
+                <span>Attach any file type to an employee. Maximum file size: 10 MB.</span>
+              </div>
+              <label class="registry-field">
+                <span>File number <b>*</b></span>
+                <input id="registry-file-number" name="fileNumber" type="text" maxlength="80" required placeholder="e.g. HR/2026/001">
+              </label>
+              <label class="registry-field">
+                <span>Employee <b>*</b></span>
+                <select id="registry-employee" name="employeeId" required>
+                  <option value="">Choose an employee</option>
+                </select>
+              </label>
+              <label class="registry-field registry-file-field">
+                <span>File <b>*</b></span>
+                <input id="registry-file" name="file" type="file" required>
+              </label>
+              <button class="button button-primary registry-submit" id="registry-upload-button" type="submit">
+                Add to registry
+              </button>
+              <p class="form-error registry-error" id="registry-error" role="alert" hidden></p>
+            </form>
+
+            <div class="table-card registry-card">
+              <div class="table-toolbar">
+                <label class="search-box">
+                  <svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="10.8" cy="10.8" r="6.8"/><path d="m16 16 4.3 4.3"/></svg>
+                  <input id="registry-search" type="search" placeholder="Search files or employees..." autocomplete="off" aria-label="Search registry files">
+                </label>
+                <label class="select-wrap">
+                  <span class="sr-only">Filter registry by employee</span>
+                  <select id="registry-filter">
+                    <option value="">All employees</option>
+                  </select>
+                  <svg viewBox="0 0 24 24" aria-hidden="true"><path d="m7 10 5 5 5-5"/></svg>
+                </label>
+              </div>
+              <div class="table-scroll">
+                <table>
+                  <thead>
+                    <tr>
+                      <th scope="col">FILE NUMBER</th>
+                      <th scope="col">FILE</th>
+                      <th scope="col">EMPLOYEE</th>
+                      <th scope="col">UPLOADED</th>
+                      <th scope="col">SIZE</th>
+                      <th scope="col"><span class="sr-only">Actions</span></th>
+                    </tr>
+                  </thead>
+                  <tbody id="registry-rows"></tbody>
+                </table>
+                <div class="registry-empty" id="registry-empty" role="status">Loading registry files...</div>
+              </div>
+              <div class="table-footer">
+                <span id="registry-results">Loading files</span>
+                <span class="table-footer-note"><span class="footer-status-dot"></span> Files stored locally</span>
+              </div>
+            </div>
+          </section>
+
+          <footer class="page-footer"><span>Made for the people who make it happen.</span><span>Office of the Head Service <b>✳</b></span></footer>
         </section>
       </main>
     </div>
